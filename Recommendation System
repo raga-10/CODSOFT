@@ -1,0 +1,24 @@
+import pandas as pd
+
+df = pd.read_csv("movie_dataset.csv")
+
+def get_genre(movie_title):
+    match = df[df['title'].str.lower() == movie_title.lower()]
+    if not match.empty:
+        return match.iloc[0]['genre']
+    return None
+
+def recommend_movies(liked_movie):
+    genre = get_genre(liked_movie)
+    if genre is None:
+        return f"Movie '{liked_movie}' not found in the dataset."
+
+    recommendations = df[(df['genre'] == genre) & (df['title'].str.lower() != liked_movie.lower())]
+    
+    if not recommendations.empty:
+        return f"Because you liked '{liked_movie}', you might also like:\n- " + "\n- ".join(recommendations['title'].tolist())
+    else:
+        return f"No other recommendations found for genre: {genre}"
+
+user_input = input("Enter a movie you liked: ")
+print(recommend_movies(user_input))
